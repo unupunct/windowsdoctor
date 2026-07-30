@@ -1,0 +1,63 @@
+<Application x:Class="WindowsDoctor.UI.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:WindowsDoctor.UI.ViewModels"
+             xmlns:v="clr-namespace:WindowsDoctor.UI.Views"
+             xmlns:conv="clr-namespace:WindowsDoctor.UI.Converters">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/DarkTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Converters (app-wide) -->
+            <conv:NavStyleConverter x:Key="NavStyleConverter"/>
+            <conv:InverseBoolConverter x:Key="InverseBool"/>
+            <conv:NullOrEmptyToVisibilityConverter x:Key="NullToVis"/>
+
+            <!-- DataTemplates: ViewModel → View -->
+            <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+                <v:DashboardView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:HardwareViewModel}">
+                <v:DiagnosticView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:StorageViewModel}">
+                <v:StorageView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:WindowsHealthViewModel}">
+                <v:DiagnosticView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:PerformanceViewModel}">
+                <v:DiagnosticView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:SecurityViewModel}">
+                <v:DiagnosticView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:NetworkViewModel}">
+                <v:DiagnosticView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:SoftwareViewModel}">
+                <v:DiagnosticView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:EventLogsViewModel}">
+                <v:EventLogsView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:RepairCenterViewModel}">
+                <v:RepairCenterView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ReportsViewModel}">
+                <v:ReportsView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:HistoryViewModel}">
+                <v:HistoryView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+                <v:SettingsView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:AdvancedToolsViewModel}">
+                <v:AdvancedToolsView/>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

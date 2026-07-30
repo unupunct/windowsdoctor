@@ -1,0 +1,141 @@
+<Window x:Class="WindowsDoctor.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:WindowsDoctor.UI.ViewModels"
+        mc:Ignorable="d"
+        Title="Windows Doctor"
+        MinWidth="1100" MinHeight="700"
+        Width="1280" Height="800"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="{StaticResource BackgroundBrush}"
+        WindowStartupLocation="CenterScreen"
+        d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </Window.Resources>
+
+    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8"
+            ClipToBounds="True">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- ══ Title Bar ══ -->
+            <Border Grid.Row="0" Grid.ColumnSpan="2"
+                    Background="{StaticResource SurfaceBrush}"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="0,0,0,1"
+                    MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
+                        <Border Width="20" Height="20" Background="{StaticResource AccentBlueBrush}"
+                                CornerRadius="4">
+                            <TextBlock Text="W" FontSize="11" FontWeight="Bold"
+                                       Foreground="#FF1E1E2E" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Windows Doctor" Margin="8,0,0,0"
+                                   Style="{StaticResource BodyText}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <TextBlock Text="v1.0.0" Margin="8,0,0,0"
+                                   Style="{StaticResource MutedText}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Style="{StaticResource WindowControlButton}" Content="─"
+                                Click="Minimize_Click" ToolTip="Minimize"/>
+                        <Button Style="{StaticResource WindowControlButton}" Content="□"
+                                Click="Maximize_Click" ToolTip="Maximize"/>
+                        <Button Style="{StaticResource WindowControlButton}" Content="✕"
+                                Click="Close_Click" ToolTip="Close">
+                            <Button.Triggers>
+                                <EventTrigger RoutedEvent="Button.MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                                            To="#FFF38BA8" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Button.Triggers>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ══ Sidebar ══ -->
+            <Border Grid.Row="1" Grid.Column="0"
+                    Background="{StaticResource SurfaceBrush}"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="0,0,1,0">
+                <DockPanel>
+                    <!-- Admin badge -->
+                    <Border DockPanel.Dock="Bottom" Margin="12,8"
+                            Background="#2089B4FA" CornerRadius="4" Padding="8,4"
+                            Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="🔐 Running as Administrator"
+                                   Foreground="{StaticResource AccentBlueBrush}"
+                                   FontSize="10" HorizontalAlignment="Center"/>
+                    </Border>
+
+                    <!-- Version -->
+                    <TextBlock DockPanel.Dock="Bottom" Text="Windows Doctor v1.0.0"
+                               Style="{StaticResource MutedText}"
+                               HorizontalAlignment="Center" Margin="0,8"/>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Margin="0,8">
+                            <TextBlock Text="NAVIGATION" Style="{StaticResource MutedText}"
+                                       Margin="16,8,0,4" FontSize="10" FontWeight="SemiBold"/>
+
+                            <Button Content="🏠  Dashboard"     Command="{Binding NavigateCommand}" CommandParameter="Dashboard"
+                                    Style="{Binding ActiveItem, Converter={StaticResource NavStyleConverter}, ConverterParameter=Dashboard}"/>
+                            <Button Content="🖥️  Hardware"      Command="{Binding NavigateCommand}" CommandParameter="Hardware"
+                                    Style="{Binding ActiveItem, Converter={StaticResource NavStyleConverter}, ConverterParameter=Hardware}"/>
+                            <Button Content="💾  Storage"       Command="{Binding NavigateCommand}" CommandParameter="Storage"
+                                    Style="{Binding ActiveItem, Converter={StaticResource NavStyleConverter}, ConverterParameter=Storage}"/>
+                            <Button Content="🪟  Windows Health" Command="{Binding NavigateCommand}" CommandParameter="WindowsHealth"
+                                    Style="{Binding ActiveItem, Converter={StaticResource NavStyleConverter}, ConverterParameter=WindowsHealth}"/>
+                            <Button Content="⚡  Performance"   Command="{Binding NavigateCommand}" CommandParameter="Performance"
+                                    Style="{Binding ActiveItem, Converter={StaticResource NavStyleConverter}, ConverterParameter=Performance}"/>
+                            <Button Content="🛡️  Security"      Command="{Binding NavigateCommand}" CommandParameter="Security"
+                                    Style="{Binding ActiveItem, Converter={StaticResource NavStyleConverter}, ConverterParameter=Security}"/>
+                            <Button Content="🌐  Network"       Command="{Binding NavigateCommand}" CommandParameter="Network"
+                                    Style="{Binding ActiveItem, Converter={StaticResource NavStyleConverter}, ConverterParameter=Network}"/>
+                            <Button Content="📦  Software"      Command="{Binding NavigateCommand}" CommandParameter="Software"
+                                    Style="{Binding ActiveItem, Converter={StaticResource NavStyleConverter}, ConverterParameter=Software}"/>
+                            <Button Content="📋  Event Logs"    Command="{Binding NavigateCommand}" CommandParameter="EventLogs"
+                                    Style="{Binding ActiveItem, Converter={StaticResource NavStyleConverter}, ConverterParameter=EventLogs}"/>
+
+                            <Separator Margin="16,8"/>
+                            <TextBlock Text="TOOLS" Style="{StaticResource MutedText}"
+                                       Margin="16,4,0,4" FontSize="10" FontWeight="SemiBold"/>
+
+                            <Button Content="🔧  Repair Center" Command="{Binding NavigateCommand}" CommandParameter="RepairCenter"
+                                    Style="{Binding ActiveItem, Converter={StaticResource NavStyleConverter}, ConverterParameter=RepairCenter}"/>
+                            <Button Content="📊  Reports"       Command="{Binding NavigateCommand}" CommandParameter="Reports"
+                                    Style="{Binding ActiveItem, Converter={StaticResource NavStyleConverter}, ConverterParameter=Reports}"/>
+                            <Button Content="🕐  History"       Command="{Binding NavigateCommand}" CommandParameter="History"
+                                    Style="{Binding ActiveItem, Converter={StaticResource NavStyleConverter}, ConverterParameter=History}"/>
+                            <Button Content="⚙️  Settings"      Command="{Binding NavigateCommand}" CommandParameter="Settings"
+                                    Style="{Binding ActiveItem, Converter={StaticResource NavStyleConverter}, ConverterParameter=Settings}"/>
+                            <Button Content="🛠️  Advanced Tools" Command="{Binding NavigateCommand}" CommandParameter="AdvancedTools"
+                                    Style="{Binding ActiveItem, Converter={StaticResource NavStyleConverter}, ConverterParameter=AdvancedTools}"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <!-- ══ Content Area ══ -->
+            <ContentControl Grid.Row="1" Grid.Column="1"
+                            Content="{Binding CurrentView}"
+                            Background="{StaticResource BackgroundBrush}"/>
+        </Grid>
+    </Border>
+</Window>

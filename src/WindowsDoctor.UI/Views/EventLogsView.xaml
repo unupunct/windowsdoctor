@@ -1,0 +1,169 @@
+<UserControl x:Class="WindowsDoctor.UI.Views.EventLogsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:WindowsDoctor.UI.Converters"
+             xmlns:vm="clr-namespace:WindowsDoctor.UI.ViewModels"
+             Background="{StaticResource BackgroundBrush}">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:InverseBoolConverter x:Key="InvBool"/>
+        <conv:NullOrEmptyToVisibilityConverter x:Key="NullToVis"/>
+        <conv:StringToBrushConverter x:Key="StrToBrush"/>
+        <conv:ScoreToColorBrushConverter x:Key="ScoreBrush"/>
+
+        <DataTemplate x:Key="FindingTemplate" DataType="{x:Type vm:FindingItemViewModel}">
+            <Border Margin="0,3" Padding="12" CornerRadius="6"
+                    Background="{StaticResource SurfaceBrush}"
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="28"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Icon}" FontSize="16" VerticalAlignment="Top"/>
+                    <StackPanel Grid.Column="1" Margin="8,0">
+                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="13"
+                                   Foreground="{StaticResource TextPrimaryBrush}" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding Message}" FontSize="12" TextWrapping="Wrap"
+                                   Foreground="{StaticResource TextSecondaryBrush}" Margin="0,2,0,0"/>
+                    </StackPanel>
+                    <Button Grid.Column="2" Content="Info" Padding="8,3" Cursor="Hand" VerticalAlignment="Top"
+                            Command="{Binding DataContext.ShowDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            CommandParameter="{Binding}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{Binding SeverityColor, Converter={StaticResource StrToBrush}}" CornerRadius="4"
+                                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" TextElement.FontSize="10"
+                                                      TextElement.FontWeight="SemiBold" TextElement.Foreground="#1E1E2E"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="EventTemplate" DataType="{x:Type vm:EventLogItemViewModel}">
+            <Border Margin="0,3" Padding="12" CornerRadius="6"
+                    Background="{StaticResource SurfaceBrush}"
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                        <StackPanel Orientation="Horizontal">
+                            <Border CornerRadius="4" Padding="6,1" Margin="0,0,8,0"
+                                    Background="{Binding LevelColor, Converter={StaticResource StrToBrush}}">
+                                <TextBlock Text="{Binding Level}" Foreground="#1E1E2E" FontSize="10" FontWeight="SemiBold"/>
+                            </Border>
+                            <TextBlock Text="{Binding Source}" FontWeight="SemiBold" FontSize="13"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="{Binding EventId, StringFormat=' (Event {0})'}" FontSize="12"
+                                       Foreground="{StaticResource TextMutedBrush}" Margin="4,0,0,0"/>
+                            <TextBlock Text="{Binding TimeLabel}" FontSize="11" Margin="12,0,0,0"
+                                       Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding MessageExcerpt}" FontSize="12" TextWrapping="Wrap"
+                                   Foreground="{StaticResource TextSecondaryBrush}" Margin="0,6,0,0"/>
+                        <Border Margin="0,8,0,0" Padding="8" CornerRadius="6"
+                                Background="{StaticResource SurfaceVariantBrush}"
+                                Visibility="{Binding HasDiagnosis, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <TextBlock Text="WHAT THIS LIKELY MEANS" FontSize="9" FontWeight="SemiBold"
+                                           Foreground="{StaticResource AccentBlueBrush}"/>
+                                <TextBlock Text="{Binding DiagnosisLabel}" FontSize="12" TextWrapping="Wrap"
+                                           Foreground="{StaticResource TextPrimaryBrush}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="Info" Padding="8,3" Cursor="Hand" VerticalAlignment="Top"
+                            Command="{Binding DataContext.ShowEventDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            CommandParameter="{Binding}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{Binding LevelColor, Converter={StaticResource StrToBrush}}" CornerRadius="4"
+                                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" TextElement.FontSize="10"
+                                                      TextElement.FontWeight="SemiBold" TextElement.Foreground="#1E1E2E"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header row -->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding ModuleIcon}" FontSize="22" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding ModuleTitle}" Style="{StaticResource HeadingText}"/>
+                </StackPanel>
+                <TextBlock Text="{Binding StatusText}" Style="{StaticResource SubheadingText}" Margin="0,4,0,0"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <Border CornerRadius="28" Width="56" Height="56" Margin="0,0,12,0"
+                        Background="{Binding HealthScore, Converter={StaticResource ScoreBrush}}">
+                    <TextBlock Text="{Binding HealthScore, StringFormat={}{0:0}}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               FontSize="18" FontWeight="Bold" Foreground="#1E1E2E"/>
+                </Border>
+                <Button Content="🗒️  Event Viewer" Style="{StaticResource GhostButton}"
+                        Command="{Binding LaunchEventViewerCommand}"
+                        Padding="14,10" Margin="0,0,10,0"/>
+                <Button Content="▶  Run Analysis" Style="{StaticResource ModernButton}"
+                        Command="{Binding RunDiagnosticsCommand}"
+                        IsEnabled="{Binding IsRunning, Converter={StaticResource InvBool}}"
+                        Padding="16,10"/>
+            </StackPanel>
+        </Grid>
+
+        <ProgressBar Grid.Row="1" Value="{Binding Progress}" Maximum="100"
+                     Visibility="{Binding IsRunning, Converter={StaticResource BoolToVis}}"/>
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="0,12,0,0">
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding Findings}" ItemTemplate="{StaticResource FindingTemplate}"/>
+
+                <Border Margin="0,20,0,0" Padding="16" CornerRadius="8"
+                        Background="{StaticResource SurfaceVariantBrush}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Recent Errors &amp; Warnings" FontSize="15" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="{Binding EventsStatus}" FontSize="12" Margin="0,4,0,0"
+                                       Foreground="{StaticResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="🔄  Load Recent Errors" Style="{StaticResource ModernButton}"
+                                Command="{Binding LoadRecentErrorsCommand}"
+                                IsEnabled="{Binding IsLoadingEvents, Converter={StaticResource InvBool}}"
+                                Padding="14,8" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+                <ItemsControl ItemsSource="{Binding RecentEvents}" ItemTemplate="{StaticResource EventTemplate}"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

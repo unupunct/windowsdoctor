@@ -1,0 +1,50 @@
+<UserControl x:Class="WindowsDoctor.UI.Views.HistoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:WindowsDoctor.UI.Converters"
+             Background="{StaticResource BackgroundBrush}">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:StringToBrushConverter x:Key="StrToBrush"/>
+    </UserControl.Resources>
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <Grid>
+                <TextBlock Text="🕐  Scan History" Style="{StaticResource HeadingText}"/>
+                <Button Content="🔄  Refresh" Style="{StaticResource GhostButton}" HorizontalAlignment="Right"
+                        Command="{Binding RefreshCommand}"/>
+            </Grid>
+            <TextBlock Text="{Binding StatusText}" Style="{StaticResource SubheadingText}" Margin="0,4,0,0"/>
+            <ProgressBar IsIndeterminate="True" Height="3" Margin="0,8,0,0"
+                         Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"/>
+        </StackPanel>
+
+        <DataGrid Grid.Row="1" ItemsSource="{Binding ScanHistory}" SelectedItem="{Binding SelectedScan}"
+                  IsReadOnly="True" SelectionMode="Single" CanUserAddRows="False" CanUserDeleteRows="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Date" Binding="{Binding ScanDate}" Width="160"/>
+                <DataGridTemplateColumn Header="Score" Width="120">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="4,2">
+                                <Border CornerRadius="3" Padding="6,2"
+                                        Background="{Binding ScoreColor, Converter={StaticResource StrToBrush}}">
+                                    <TextBlock Text="{Binding Score, StringFormat={}{0:0}}" FontWeight="SemiBold" Foreground="#1E1E2E" FontSize="12"/>
+                                </Border>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Findings" Binding="{Binding Findings}" Width="80"/>
+                <DataGridTextColumn Header="Critical" Binding="{Binding Critical}" Width="80"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <TextBlock Grid.Row="2" Text="Click a row to view details." Style="{StaticResource MutedText}" Margin="0,8,0,0"/>
+    </Grid>
+</UserControl>

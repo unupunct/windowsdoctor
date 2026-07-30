@@ -1,0 +1,254 @@
+<UserControl x:Class="WindowsDoctor.UI.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:WindowsDoctor.UI.Converters"
+             xmlns:vm="clr-namespace:WindowsDoctor.UI.ViewModels"
+             Background="{StaticResource BackgroundBrush}">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:InverseBoolConverter x:Key="InvBool"/>
+        <conv:StringToBrushConverter x:Key="StrToBrush"/>
+        <conv:ScoreToColorBrushConverter x:Key="ScoreBrush"/>
+        <conv:ZeroToCollapsedConverter x:Key="ZeroToCollapsed"/>
+
+        <DataTemplate x:Key="DiskTemplate" DataType="{x:Type vm:DiskCardItem}">
+            <Border Margin="0,0,8,0" Padding="12" CornerRadius="8" MinWidth="160"
+                    Background="{StaticResource SurfaceBrush}"
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="💾" FontSize="16" Margin="0,0,6,0"/>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="{Binding Label}" Style="{StaticResource MutedText}"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <ProgressBar Value="{Binding UsedPercent}" Maximum="100" Margin="0,8,0,4" Height="6"
+                                 Foreground="{Binding StatusColor, Converter={StaticResource StrToBrush}}"/>
+                    <TextBlock FontSize="11" Foreground="{StaticResource TextSecondaryBrush}">
+                        <Run Text="{Binding FreeSpace}"/>
+                        <Run Text=" free of "/>
+                        <Run Text="{Binding TotalSpace}"/>
+                    </TextBlock>
+                    <Border Margin="0,6,0,0" HorizontalAlignment="Left" CornerRadius="3" Padding="4,1"
+                            Background="{StaticResource SurfaceVariantBrush}">
+                        <TextBlock Text="{Binding TypeLabel}" FontSize="10"
+                                   Foreground="{StaticResource AccentBlueBrush}"/>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="FindingTemplate" DataType="{x:Type vm:FindingSummaryItem}">
+            <Border Margin="0,2" Padding="10,8" CornerRadius="6"
+                    Background="{StaticResource SurfaceVariantBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="24"/>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Icon}" FontSize="14"/>
+                    <TextBlock Grid.Column="1" Text="{Binding Module}" FontSize="11"
+                               Foreground="{StaticResource AccentBlueBrush}" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="2" Text="{Binding Title}" FontSize="12"
+                               Foreground="{StaticResource TextPrimaryBrush}" TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="CategoryTemplate" DataType="{x:Type vm:CategoryScoreItem}">
+            <Grid Margin="0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="36"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Category}" FontSize="12"
+                           Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                <ProgressBar Grid.Column="1" Value="{Binding Score}" Maximum="100" Margin="8,0"
+                             Foreground="{Binding Color, Converter={StaticResource StrToBrush}}" Height="6"/>
+                <TextBlock Grid.Column="2" Text="{Binding Score, StringFormat={}{0:0}}"
+                           FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"
+                           Foreground="{Binding Color, Converter={StaticResource StrToBrush}}"/>
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24">
+            <!-- ── Header ── -->
+            <Grid Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="🏠  Dashboard" Style="{StaticResource HeadingText}"/>
+                    <TextBlock Text="{Binding LastScanTime}" Style="{StaticResource SubheadingText}" Margin="0,4,0,0"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <Button Content="▶  Run Full Scan" Style="{StaticResource ModernButton}"
+                            Command="{Binding RunScanCommand}"
+                            IsEnabled="{Binding IsScanning, Converter={StaticResource InvBool}}"
+                            Padding="20,10" FontSize="14"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- ── Progress ── -->
+            <StackPanel Visibility="{Binding IsScanning, Converter={StaticResource BoolToVis}}" Margin="0,0,0,12">
+                <ProgressBar Value="{Binding ScanProgress}" Maximum="100" Height="6" Margin="0,0,0,4"/>
+                <TextBlock Text="{Binding ScanStatus}" Style="{StaticResource MutedText}"/>
+            </StackPanel>
+
+            <!-- ── Health Score + Category Scores ── -->
+            <Grid Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Score circle -->
+                <Border Style="{StaticResource CardBorder}" Padding="0">
+                    <StackPanel HorizontalAlignment="Center" Margin="16">
+                        <TextBlock Text="Overall Health" Style="{StaticResource SubheadingText}"
+                                   HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                        <Border CornerRadius="60" Width="120" Height="120" HorizontalAlignment="Center"
+                                Background="{Binding OverallHealthScore, Converter={StaticResource ScoreBrush}}">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding OverallHealthScore, StringFormat={}{0:0}}"
+                                           FontSize="38" FontWeight="Bold" Foreground="#1E1E2E"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="/100" FontSize="14" Foreground="#1E1E2E"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        <TextBlock Text="{Binding HealthScoreLabel}" HorizontalAlignment="Center"
+                                   FontSize="14" FontWeight="SemiBold" Margin="0,12,0,0"
+                                   Foreground="{Binding HealthScoreColor, Converter={StaticResource StrToBrush}}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Category scores -->
+                <Border Grid.Column="1" Style="{StaticResource CardBorder}" Margin="12,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Category Scores" Style="{StaticResource SubheadingText}" Margin="0,0,0,12"/>
+                        <ItemsControl ItemsSource="{Binding CategoryScores}" ItemTemplate="{StaticResource CategoryTemplate}"/>
+                        <TextBlock Text="Run a scan to see scores" Style="{StaticResource MutedText}"
+                                   Visibility="{Binding CategoryScores.Count, Converter={StaticResource ZeroToCollapsed}}"
+                                   HorizontalAlignment="Center" Margin="0,20"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- ── System Info Cards ── -->
+            <Border Style="{StaticResource CardBorder}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="System Information" Style="{StaticResource SubheadingText}" Margin="0,0,0,12"/>
+                    <UniformGrid Columns="3" Rows="2">
+                        <StackPanel Margin="0,0,16,8">
+                            <TextBlock Text="COMPUTER" Style="{StaticResource MutedText}" Margin="0,0,0,2"/>
+                            <TextBlock Text="{Binding ComputerName}" Style="{StaticResource BodyText}" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding WindowsEdition}" Style="{StaticResource MutedText}"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,16,8">
+                            <TextBlock Text="WINDOWS BUILD" Style="{StaticResource MutedText}" Margin="0,0,0,2"/>
+                            <TextBlock Text="{Binding WindowsBuild}" Style="{StaticResource BodyText}" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding WindowsEdition}" Style="{StaticResource MutedText}"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,8">
+                            <TextBlock Text="UPTIME" Style="{StaticResource MutedText}" Margin="0,0,0,2"/>
+                            <TextBlock Text="{Binding Uptime}" Style="{StaticResource BodyText}" FontWeight="SemiBold"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,16,0">
+                            <TextBlock Text="CPU" Style="{StaticResource MutedText}" Margin="0,0,0,2"/>
+                            <TextBlock Text="{Binding CpuName}" Style="{StaticResource BodyText}" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding CpuUsage}" Style="{StaticResource MutedText}"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,16,0">
+                            <TextBlock Text="RAM" Style="{StaticResource MutedText}" Margin="0,0,0,2"/>
+                            <TextBlock Text="{Binding RamUsage}" Style="{StaticResource BodyText}" FontWeight="SemiBold"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="GPU" Style="{StaticResource MutedText}" Margin="0,0,0,2"/>
+                            <TextBlock Text="{Binding GpuName}" Style="{StaticResource BodyText}" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+
+            <!-- ── Security Status Badges ── -->
+            <Border Style="{StaticResource CardBorder}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Security &amp; Status" Style="{StaticResource SubheadingText}" Margin="0,0,0,12"/>
+                    <WrapPanel>
+                        <Border Margin="0,0,8,8" Padding="10,6" CornerRadius="20" Background="{StaticResource SurfaceVariantBrush}"
+                                ToolTip="Whether this PC currently has a working internet connection.">
+                            <TextBlock Text="{Binding InternetStatus}" FontSize="12" Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </Border>
+                        <Border Margin="0,0,8,8" Padding="10,6" CornerRadius="20" Background="{StaticResource SurfaceVariantBrush}"
+                                ToolTip="Windows Defender real-time antivirus protection.">
+                            <TextBlock Text="{Binding DefenderStatus}" FontSize="12" Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </Border>
+                        <Border Margin="0,0,8,8" Padding="10,6" CornerRadius="20" Background="{StaticResource SurfaceVariantBrush}"
+                                ToolTip="Windows Firewall, which blocks unsolicited inbound network traffic.">
+                            <TextBlock Text="{Binding FirewallStatus}" FontSize="12" Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </Border>
+                        <Border Margin="0,0,8,8" Padding="10,6" CornerRadius="20" Background="{StaticResource SurfaceVariantBrush}"
+                                ToolTip="BitLocker drive encryption, which protects your data if the disk is stolen. Off by default on most PCs.">
+                            <TextBlock Text="{Binding BitLockerStatus}" FontSize="12" Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </Border>
+                        <Border Margin="0,0,8,8" Padding="10,6" CornerRadius="20" Background="{StaticResource SurfaceVariantBrush}"
+                                ToolTip="UEFI Secure Boot, which blocks unsigned/untrusted code from running at startup. Enabled in BIOS/UEFI settings.">
+                            <TextBlock Text="{Binding SecureBootStatus}" FontSize="12" Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </Border>
+                        <Border Margin="0,0,8,8" Padding="10,6" CornerRadius="20" Background="{StaticResource SurfaceVariantBrush}"
+                                ToolTip="Trusted Platform Module (TPM) chip, required by Windows 11 for hardware-backed security features.">
+                            <TextBlock Text="{Binding TpmStatus}" FontSize="12" Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </Border>
+                        <Border Margin="0,0,8,8" Padding="10,6" CornerRadius="20" Background="{StaticResource SurfaceVariantBrush}"
+                                ToolTip="Whether a Windows Update has installed and is waiting for a restart to finish.">
+                            <TextBlock Text="{Binding WindowsUpdateStatus}" FontSize="12" Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </Border>
+                        <Border Margin="0,0,8,8" Padding="10,6" CornerRadius="20" Background="{StaticResource SurfaceVariantBrush}"
+                                ToolTip="Current battery charge, if this device has one.">
+                            <TextBlock Text="{Binding BatteryStatus}" FontSize="12" Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </Border>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ── Disks ── -->
+            <Border Style="{StaticResource CardBorder}" Margin="0,0,0,16"
+                    Visibility="{Binding Disks.Count, Converter={StaticResource ZeroToCollapsed}}">
+                <StackPanel>
+                    <TextBlock Text="Storage" Style="{StaticResource SubheadingText}" Margin="0,0,0,12"/>
+                    <ItemsControl ItemsSource="{Binding Disks}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:DiskCardItem}">
+                                <ContentPresenter ContentTemplate="{StaticResource DiskTemplate}"
+                                                  Content="{Binding}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- ── Top Findings ── -->
+            <Border Style="{StaticResource CardBorder}"
+                    Visibility="{Binding TopFindings.Count, Converter={StaticResource ZeroToCollapsed}}">
+                <StackPanel>
+                    <TextBlock Text="Top Issues" Style="{StaticResource SubheadingText}" Margin="0,0,0,12"/>
+                    <ItemsControl ItemsSource="{Binding TopFindings}" ItemTemplate="{StaticResource FindingTemplate}"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

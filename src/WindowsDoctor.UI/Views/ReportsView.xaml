@@ -1,0 +1,36 @@
+<UserControl x:Class="WindowsDoctor.UI.Views.ReportsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BackgroundBrush}">
+    <StackPanel Margin="24" MaxWidth="600">
+        <TextBlock Text="📊  Reports" Style="{StaticResource HeadingText}" Margin="0,0,0,4"/>
+        <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource SubheadingText}" Margin="0,0,0,24"/>
+
+        <Border Style="{StaticResource CardBorder}" Margin="0,0,0,12">
+            <StackPanel>
+                <TextBlock Text="FORMAT" Style="{StaticResource MutedText}" Margin="0,0,0,12" FontWeight="SemiBold"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                    <RadioButton Content="HTML" IsChecked="True" GroupName="fmt" Margin="0,0,16,0"
+                                 Foreground="{StaticResource TextPrimaryBrush}" Tag="Html"
+                                 Checked="FormatRadio_Checked"/>
+                    <RadioButton Content="JSON" GroupName="fmt" Margin="0,0,16,0"
+                                 Foreground="{StaticResource TextPrimaryBrush}" Tag="Json"
+                                 Checked="FormatRadio_Checked"/>
+                    <RadioButton Content="CSV" GroupName="fmt"
+                                 Foreground="{StaticResource TextPrimaryBrush}" Tag="Csv"
+                                 Checked="FormatRadio_Checked"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <Border Style="{StaticResource CardBorder}" Margin="0,0,0,16">
+            <StackPanel>
+                <TextBlock Text="OUTPUT FOLDER" Style="{StaticResource MutedText}" Margin="0,0,0,12" FontWeight="SemiBold"/>
+                <TextBox Text="{Binding OutputPath}"/>
+            </StackPanel>
+        </Border>
+
+        <Button Content="📄  Generate Report" Style="{StaticResource ModernButton}"
+                Command="{Binding GenerateReportCommand}" Padding="20,10" HorizontalAlignment="Left"/>
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Diagnostics.EventLog" Version="8.0.0" />
+    <ProjectReference Include="..\WindowsDoctor.Common\WindowsDoctor.Common.csproj" />
+    <ProjectReference Include="..\WindowsDoctor.Core\WindowsDoctor.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>WindowsDoctor</AssemblyName>
+    <RootNamespace>WindowsDoctor.UI</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.11" />
+    <PackageReference Include="Serilog" Version="4.0.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.0" />
+    <ProjectReference Include="..\WindowsDoctor.Common\WindowsDoctor.Common.csproj" />
+    <ProjectReference Include="..\WindowsDoctor.Core\WindowsDoctor.Core.csproj" />
+    <ProjectReference Include="..\WindowsDoctor.Infrastructure\WindowsDoctor.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
